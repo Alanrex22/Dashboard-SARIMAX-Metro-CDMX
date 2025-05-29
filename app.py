@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.graph_objs as go
 
 # Leer los datos
-df = pd.read_csv("predicciones_sarimax_completo.csv")
+df = pd.read_csv("predicciones_dashboard_final.csv")
 
 # Convertir columna 'Mes' a datetime para orden correcto
 df['Mes'] = pd.to_datetime(df['Mes'], format='%Y-%m')
