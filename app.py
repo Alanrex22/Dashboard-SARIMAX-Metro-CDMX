@@ -14,8 +14,8 @@ df = df.dropna(subset=['Mes'])  # elimina filas con fechas mal formateadas
 
 # Inicializar la app
 app = dash.Dash(__name__)
-app.title = "Dashboard Metrogit status
- CDMX"
+app.title = 'Dashboard Metrogit status'
+
 
 # Obtener valores únicos
 estaciones = sorted(df['Estacion'].unique())
