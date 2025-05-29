@@ -1,8 +1,10 @@
-import dash
-from dash import dcc, html, Input, Output
 import pandas as pd
-import plotly.graph_objs as go
+import dash
+from dash import dcc, html
+from dash.dependencies import Input, Output
+import plotly.graph_objects as go
 
+<<<<<<< HEAD
 # Leer los datos
 df = pd.read_csv("predicciones_dashboard_final.csv")
 
@@ -12,62 +14,76 @@ df = df.dropna(subset=['Mes'])  # elimina filas con fechas mal formateadas
 
 # Inicializar la app
 app = dash.Dash(__name__)
-server = app.server
+app.title = "Dashboard Metrogit status
+ CDMX"
 
-# Opciones únicas
-estaciones = sorted(df['estacion'].unique())
+# Obtener valores únicos
+estaciones = sorted(df['Estacion'].unique())
 meses = sorted(df['Mes'].dt.to_period('M').astype(str).unique())
 
-# Layout
+# Layout de la app
 app.layout = html.Div([
-    html.H1("Dashboard de Afluencia y Delitos en el Metro CDMX", style={"textAlign": "center"}),
+    html.H1("Dashboard de Afluencia y Delitos en el Metro CDMX", style={'textAlign': 'center'}),
+    
+    html.Label("Selecciona una estación:"),
+    dcc.Dropdown(
+        id='estacion_selector',
+        options=[{'label': est, 'value': est} for est in estaciones],
+        value=estaciones[0]
+    ),
 
-    html.Div([
-        html.Label("Selecciona una estación:"),
-        dcc.Dropdown(id='estacion-dropdown', options=[{'label': est, 'value': est} for est in estaciones], value=estaciones[0]),
+    html.Label("Selecciona un mes:"),
+    dcc.Dropdown(
+        id='mes_selector',
+        options=[{'label': mes, 'value': mes} for mes in meses],
+        value=meses[0]
+    ),
 
-        html.Label("Selecciona un mes:"),
-        dcc.Dropdown(id='mes-dropdown', options=[{'label': m, 'value': m} for m in meses], value=meses[0])
-    ], style={'width': '40%', 'margin': 'auto'}),
-
-    dcc.Graph(id='grafico-evolucion')
+    dcc.Graph(id='grafico_afluencia_delitos')
 ])
 
-# Callback
+# Callback para actualizar gráfico
 @app.callback(
-    Output('grafico-evolucion', 'figure'),
-    [Input('estacion-dropdown', 'value'),
-     Input('mes-dropdown', 'value')]
+    Output('grafico_afluencia_delitos', 'figure'),
+    Input('estacion_selector', 'value'),
+    Input('mes_selector', 'value')
 )
 def actualizar_grafico(estacion_seleccionada, mes_seleccionado):
-    df_filtrado = df[df['estacion'] == estacion_seleccionada].sort_values('Mes')
-
-    # Calcular crecimiento porcentual mensual de delitos
-    df_filtrado['delitos_totales'] = df_filtrado['delitos_con_violencia'] + df_filtrado['delitos_sin_violencia']
-    df_filtrado['variacion_delitos'] = df_filtrado['delitos_totales'].pct_change() * 100
+    df_filtrado = df[df['Estacion'] == estacion_seleccionada]
 
     fig = go.Figure()
 
-    fig.add_trace(go.Scatter(x=df_filtrado['Mes'], y=df_filtrado['afluencia_predicha'],
-                             mode='lines+markers', name='Afluencia Predicha', line=dict(color='blue')))
+    fig.add_trace(go.Scatter(
+        x=df_filtrado['Mes'], y=df_filtrado['afluencia_predicha'],
+        mode='lines+markers', name='Afluencia Predicha',
+        line=dict(color='blue')
+    ))
 
-    fig.add_trace(go.Scatter(x=df_filtrado['Mes'], y=df_filtrado['delitos_con_violencia'],
-                             mode='lines+markers', name='Delitos con Violencia', line=dict(color='red')))
+    fig.add_trace(go.Scatter(
+        x=df_filtrado['Mes'], y=df_filtrado['delitos_con_violencia'],
+        mode='lines+markers', name='Delitos con Violencia',
+        line=dict(color='red')
+    ))
 
-    fig.add_trace(go.Scatter(x=df_filtrado['Mes'], y=df_filtrado['delitos_sin_violencia'],
-                             mode='lines+markers', name='Delitos sin Violencia', line=dict(color='orange')))
+    fig.add_trace(go.Scatter(
+        x=df_filtrado['Mes'], y=df_filtrado['delitos_sin_violencia'],
+        mode='lines+markers', name='Delitos sin Violencia',
+        line=dict(color='orange')
+    ))
 
-    fig.update_layout(title=f"Evolución en {estacion_seleccionada}",
-                      xaxis_title="Mes",
-                      yaxis_title="Cantidad",
-                      legend_title="Indicador",
-                      template="plotly_white")
+    fig.update_layout(
+        title=f"Evolución en {estacion_seleccionada}",
+        xaxis_title="Mes",
+        yaxis_title="Cantidad",
+        legend_title="Indicador",
+        template="plotly_white"
+    )
 
     return fig
 
-# Ejecutar
-import os
-
+# Ejecutar en Render (bind dinámico)
 if __name__ == "__main__":
+    import os
     port = int(os.environ.get("PORT", 8050))
-    app.run(host="0.0.0.0", port=port)
+    app.run_server(debug=False, host="0.0.0.0", port=port)
+
