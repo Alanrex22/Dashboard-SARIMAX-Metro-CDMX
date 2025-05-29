@@ -7,7 +7,8 @@ import plotly.graph_objs as go
 df = pd.read_csv("predicciones_dashboard_final.csv")
 
 # Convertir columna 'Mes' a datetime para orden correcto
-df['Mes'] = pd.to_datetime(df['Mes'], format='%Y-%m')
+df['Mes'] = pd.to_datetime(df['Mes'], format="%Y-%m", errors='coerce')
+df = df.dropna(subset=['Mes'])  # elimina filas con fechas mal formateadas
 
 # Inicializar la app
 app = dash.Dash(__name__)
