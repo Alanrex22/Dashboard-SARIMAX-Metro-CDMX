@@ -4,7 +4,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 
-<<<<<<< HEAD
+
 # Leer los datos
 df = pd.read_csv("predicciones_dashboard_final.csv")
 
